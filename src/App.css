@@ -1,0 +1,29 @@
+.app-container {
+    align-items:center;
+    justify-content:center;
+    display:flex;
+}
+
+.title-container {
+    padding:10px;
+}
+
+.login-container {
+    align-items:center;
+    justify-content:center;
+    display:flex;
+    flex-direction:column;
+}
+
+.row-container {
+    align-items:center;
+    justify-content:center;
+    display:flex;
+    flex-direction:row;
+}
+
+.logout-container {
+    position:absolute;
+    top:20px;
+    right:20px;
+}
