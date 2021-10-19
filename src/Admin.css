@@ -1,8 +1,7 @@
 .card-container {
     width:800px;
-    /* height:500px; */
     background-color:#f8f8f8;
-    /* flex-direction:column; */
+    flex-direction:column;
     align-items:center;
     justify-content:center;
     display:flex;
@@ -11,20 +10,12 @@
     padding:20px
 }
 
-.details-container {
-    display:flex;
-    align-items:center;
-    justify-content:space-evenly;
-    flex-direction:column;
-}
-
 table {
     border-collapse: collapse;
-    width: 100%;
+    width: 80%;
 }
 
 th, td {
-    border: 1px solid #ffffff;
     text-align: left;
     padding: 8px;
     font-size: 16px;
@@ -39,21 +30,12 @@ td {
 }
 
 .form-container {
-    width:100%;
+    width:80%;
     display:flex;
     align-items:center;
     justify-content:space-between;
     flex-direction:row;
-    padding:10px;
-}
-
-.delete-container {
-    padding:10px;
-    width:100%;
-    align-items:center;
-    justify-content:space-between;
-    display:flex;
-    flex-direction:row;
+    padding:10px 0px
 }
 
 input {
@@ -61,7 +43,7 @@ input {
     width:175px;    
 }
 
-select {
+.select-selects {
     height:30px;
     width:175px;
 }

@@ -1,26 +1,24 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import axios from 'axios';
 import './Admin.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Dropdown from 'react-bootstrap/Dropdown';
-import LoadMore from './images/loadMore.svg';
+import {AiFillEdit, AiFillDelete, AiFillCheckSquare, AiFillCloseCircle} from 'react-icons/ai';
+
 
 export default function Admin() {
 
     const [items, setItems] = useState([]);
-    const [data, setData] = useState({
-        name:"",
-        email:"",
-        role:"",
-    });
+    const [editId, setEditId] = useState(['']);
     const [editData, setEditData] = useState({
         name:"",
         email:"",
         role:"",
     });
-    const [email, setEmail] = useState('');
-    let id  = "";
+    const [data, setData] = useState({
+        name:"",
+        email:"",
+        role:"",
+    });
   
     useEffect(() => {
       fetch("http://localhost:5000/users")
@@ -33,86 +31,26 @@ export default function Admin() {
           })
     }, [])
 
-    const deleteUser = () => {
-        console.log(email)
-        for (var i in items.map(item => item._id)) {
-            if (String(items[i].email) === String(email)) {
-                id = items[i]._id
-                break
-            }
-        }
-        console.log(id)
+    const deleteUser = (id) => {
         axios.delete('http://localhost:5000/users/' + id)
         .then(response => {
             console.log(response)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-
-        axios.get('http://localhost:5000/users/')
-        .then(res =>{
-            setItems(res.data)
-            console.log(items)
+            const newData = items.filter(i => i._id !== id)
+            setItems(newData)
         })
         .catch(error => {
             console.log(error)
         })
     }
 
-    function submit(e) {
-        e.preventDefault();
-        axios.post('http://localhost:5000/users/add/', data)
-        .then(response => {
-            console.log(response.data)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-
-        axios.get('http://localhost:5000/users/')
-        .then(res =>{
-            setItems(res.data)
-            console.log(items)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-    }
-
-    function editSubmit(e) {
-        e.preventDefault();
-        console.log(editData.email)
-        for (var i in items.map(item => item._id)) {
-            if (String(items[i].email) === String(editData.email)) {
-                id = items[i]._id
-                break
-            }
+    const editUser = (id, name, email, role) => {
+        setEditId(id)
+        const originalData = {
+            name:name,
+            email:email,
+            role:role
         }
-        console.log(id)
-        axios.post('http://localhost:5000/users/update/' + id, editData)
-        .then(response => {
-            console.log(response.data)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-
-        axios.get('http://localhost:5000/users/')
-        .then(res =>{
-            setItems(res.data)
-            console.log(items)
-        })
-        .catch(error => {
-            console.log(error)
-        })
-    }
-
-    function handle(e) {
-        const newData = {...data}
-        newData[e.target.id] = e.target.value
-        setData(newData)
-        console.log(data)
+        setEditData(originalData)
     }
 
     function editHandle(e) {
@@ -122,101 +60,147 @@ export default function Admin() {
         console.log(editData)
     }
 
-    const handleSelect=(e)=>{
-        setEmail(e)
-        console.log(e)
+    function editSubmit(id) {
+        axios.post('http://localhost:5000/users/update/' + id, editData)
+        .then(response => {
+            console.log(response.data)
+            axios.get('http://localhost:5000/users/')
+            .then(res =>{
+                setItems(res.data)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        })
+        .catch(error => {
+            console.log(error)
+        })
+        setEditId('')
+    }
+
+    function cancelSubmit() {
+        setEditId('')
+    }
+
+    function handle(e) {
+        const newData = {...data}
+        newData[e.target.id] = e.target.value
+        setData(newData)
+        console.log(data)
+    }
+
+    function submit(e) {
+        e.preventDefault();
+        axios.post('http://localhost:5000/users/add/', data)
+        .then(response => {
+            console.log(response)
+            const newData = [...items, data]
+            setItems(newData)
+        })
+        .catch(error => {
+            console.log(error)
+        })
     }
 
     return(
-        <div className = "card-container" style={{backgroundRepeat: 'no-repeat', backgroundImage: `url(${LoadMore})`, backgroundPosition: 'center'}}>
-            <div>
-                <table>
-                    <thead>
-                        <tr> 
-                            <th>Name</th>   
-                            <th>Email</th>
-                            <th>Role</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {items.map(item => <tr>
+        <div className = "card-container">
+            <table>
+                <thead>
+                    <tr> 
+                        <th>Name</th>   
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {items.map((item) =>
+                    <Fragment>
+                        {editId === item._id ?
+                        (<tr>
+                            <td>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={editData.name}
+                                    onChange={e => editHandle(e)}
+                                    required="required"
+                                    placeholder="Enter a name..."
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    value={editData.email}
+                                    onChange={e => editHandle(e)}
+                                    required="required"
+                                    placeholder="Enter a name..."
+                                />
+                            </td>
+                            <td>
+                                <select
+                                    type="text"
+                                    id="role"
+                                    value={editData.role}
+                                    onChange={e => editHandle(e)}
+                                    required="required"
+                                >
+                                    <option value="Admin">Admin</option>
+                                    <option value="Normal">Normal</option>
+                                </select>
+                            </td>   
+                            <td>
+                                <AiFillCheckSquare onClick={() => editSubmit(item._id)}/>
+                            </td>
+                            <td>
+                                <AiFillCloseCircle onClick={() => cancelSubmit()}/>
+                            </td>
+                        </tr>):
+                        (<tr>
                             <td>{item.name}</td>
                             <td>{item.email}</td>
                             <td>{item.role}</td>
-                            <td>Test</td>
+                            <td>
+                                <AiFillEdit onClick={() => editUser(item._id, item.name, item.email, item.role)}/>
+                            </td>
+                            <td>
+                                <AiFillDelete onClick={() => deleteUser(item._id)}/>
+                            </td>
                         </tr>)}
-                    </tbody>
-                </table>
-                <form className="form-container" onSubmit={(e) => submit(e)}>
-                    <input
-                        type="text"
-                        id="name"
-                        value={data.name}
-                        onChange={e => handle(e)}
-                        required="required"
-                        placeholder="Enter a name..."
-                    />
-                    <input
-                        type="email"
-                        id="email"
-                        value={data.email}
-                        onChange={e => handle(e)}
-                        required="required"
-                        placeholder="Enter an email..."
-                    />
-                    <select
-                        type="text"
-                        id="role"
-                        value={data.role}
-                        onChange={e => handle(e)}
-                        required="required"
-                    >
-                        <option value="Admin">Admin</option>
-                        <option value="Normal">Normal</option>
-                    </select>
-                    <button className='button-buttons'>Add</button>
-                </form>  
-                <form className="form-container" onSubmit={(e) => editSubmit(e, data.email)}>
-                    <input
-                        type="text"
-                        id="name"
-                        value={editData.name}
-                        onChange={e => editHandle(e)}
-                        required="required"
-                        placeholder="Enter a name..."
-                    />
-                    <select
-                        type="text"
-                        id="email"
-                        value={editData.email}
-                        onChange={e => editHandle(e)}
-                        required="required"
-                    >
-                        {items.map(item => (<option eventKey={item.email}>{item.email}</option>))}
-                    </select>
-                    <select
-                        type="text"
-                        id="role"
-                        value={editData.role}
-                        onChange={e => editHandle(e)}
-                        required="required"
-                    >
-                        <option value="Admin">Admin</option>
-                        <option value="Normal">Normal</option>
-                    </select>
-                    <button className='button-buttons'>Edit</button>
-                </form>  
-                <div className='delete-container'>
-                    <DropdownButton
-                        className='dropdownbutton'
-                        onSelect={handleSelect}
-                        title="Delete Users"
-                        variant="secondary"> 
-                            {items.map(item => (<Dropdown.Item eventKey={item.email}>{item.email}</Dropdown.Item>))}
-                    </DropdownButton>
-                    <button className='button-buttons' onClick={() => deleteUser()}>Delete</button>
-                </div> 
-            </div>
+                    </Fragment>)}    
+                </tbody>
+            </table>
+            <form className="form-container" onSubmit={(e) => submit(e)}>
+                <input className='button-buttons'
+                    type="text"
+                    id="name"
+                    value={data.name}
+                    onChange={e => handle(e)}
+                    required="required"
+                    placeholder="Enter a name..."
+                />
+                <input className='button-buttons'
+                    type="email"
+                    id="email"
+                    value={data.email}
+                    onChange={e => handle(e)}
+                    required="required"
+                    placeholder="Enter an email..."
+                />
+                <select
+                    type="text"
+                    id="role"
+                    value={data.role}
+                    onChange={e => handle(e)}
+                    required="required"
+                >
+                    <option value="Admin">Admin</option>
+                    <option value="Normal">Normal</option>
+                </select>
+                <button className='button-buttons'>Add</button>
+            </form>  
         </div>
     )
 }

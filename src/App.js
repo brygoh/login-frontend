@@ -3,13 +3,14 @@ import {GoogleLogin, GoogleLogout} from 'react-google-login';
 import './App.css';
 import Admin from './Admin';
 
-function App() {
+function Login() {
 
   const clientId = "759073796632-us9c4tshsk2ls6fhtus10q1njv3bdv2t.apps.googleusercontent.com";
   const [loginButton, setLoginButton] = useState(true);
   const [logoutButton, setLogoutButton] = useState(false);
-  const [check, setCheck] = useState(false);
+
   const [items, setItems] = useState([]);
+  const [check, setCheck] = useState(false);
   const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
@@ -24,21 +25,17 @@ function App() {
   }, [])
 
   const onSuccess = (res) => {
-    console.log("Login Success: ");
-
     for (var i in items.map(item => item.email)) {
       if (String(items[i].email) === String(res.profileObj.email)) {
         if (String(items[i].role) === 'Admin') {
           setAdmin(true);
         }
         setCheck(true);
+        setLoginButton(false);
+        setLogoutButton(true);
         break;
       }
     }
-    console.log(check);
-    console.log(admin);
-    setLoginButton(false);
-    setLogoutButton(true);
   }
 
   const onFailure = (res) => {
@@ -98,4 +95,4 @@ function App() {
   );
 }
 
-export default App;
+export default Login;
