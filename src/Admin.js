@@ -173,7 +173,7 @@ export default function Admin() {
                 </tbody>
             </table>
             <form className="form-container" onSubmit={(e) => submit(e)}>
-                <input className='button-buttons'
+                <input className='input-inputs'
                     type="text"
                     id="name"
                     value={data.name}
@@ -181,7 +181,7 @@ export default function Admin() {
                     required="required"
                     placeholder="Enter a name..."
                 />
-                <input className='button-buttons'
+                <input className='input-inputs'
                     type="email"
                     id="email"
                     value={data.email}
@@ -189,7 +189,7 @@ export default function Admin() {
                     required="required"
                     placeholder="Enter an email..."
                 />
-                <select
+                <select className="select-selects"
                     type="text"
                     id="role"
                     value={data.role}

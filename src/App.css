@@ -9,21 +9,31 @@
 }
 
 .login-container {
+    margin-top:50px;
+    width:100%;
+    align-items:center;
+    justify-content:space-evenly;
+    display:flex;
+    flex-direction:row;
+}
+
+.col-container {
     align-items:center;
     justify-content:center;
     display:flex;
     flex-direction:column;
 }
 
-.row-container {
-    align-items:center;
-    justify-content:center;
-    display:flex;
-    flex-direction:row;
-}
-
 .logout-container {
     position:absolute;
     top:20px;
     right:20px;
+}
+
+.admin-container {
+    width:100%;
+    align-items:center;
+    justify-content:space-evenly;
+    display:flex;
+    flex-direction:column;
 }

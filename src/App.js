@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {GoogleLogin, GoogleLogout} from 'react-google-login';
 import './App.css';
 import Admin from './Admin';
+import Button from 'react-bootstrap/Button';
 
 function Login() {
 
@@ -10,6 +11,7 @@ function Login() {
   const [logoutButton, setLogoutButton] = useState(false);
 
   const [items, setItems] = useState([]);
+  const [click, setClick] = useState(false);
   const [check, setCheck] = useState(false);
   const [admin, setAdmin] = useState(false);
 
@@ -36,6 +38,7 @@ function Login() {
         break;
       }
     }
+    setClick(true);
   }
 
   const onFailure = (res) => {
@@ -48,32 +51,54 @@ function Login() {
     setLogoutButton(false);
     setCheck(false);
     setAdmin(false);
+    setClick(false);
   }
 
   return (
     <div className="app-container">
       {onSuccess}
-      {loginButton || !check ?
-      <div className="login-container">
-        <h1 className="title-container">Login With Google</h1>
-        <div className="row-container">
+      {(loginButton || !check) && !click?
+        <div className="login-container">
+          <div className="col-container">
+            <h1 className="title-container">Login With Google</h1>
+            <GoogleLogin
+              render={renderProps => (
+                <Button onClick={renderProps.onClick} variant="dark">Login</Button>
+              )}
+              clientId={clientId}
+              buttonText="Login"
+              onSuccess={onSuccess}
+              onFailure={onFailure}
+              cookiePolicy={'single_host_origin'}/>
+          </div>
           <img height="500px" width="500px" src="emailCapture.svg"></img>
-          <GoogleLogin
+        </div>: null}
+
+      {click && !check ?
+      <div className="login-container">
+        <div className="col-container">
+          <h1 className="title-container">Login Failure</h1>
+          <GoogleLogout
+            render={renderProps => (
+              <Button onClick={renderProps.onClick} variant="dark">Back</Button>
+            )}
             clientId={clientId}
-            buttonText="Login"
-            onSuccess={onSuccess}
-            onFailure={onFailure}
-            cookiePolicy={'single_host_origin'}/>
+            buttonText="Logout"
+            onLogoutSuccess={onLogoutSuccess}/>
         </div>
-      </div>: null}
+        <img height="500px" width="500px" src="serverDown.svg"></img>
+      </div>:null}
 
       {(logoutButton && check) ?
-      <div>
-        {admin ? <div className="login-container">
+      <div style={{width:'100%'}}>
+        {admin ? <div className="admin-container">
           <h1 className="title-container">Admin Login Successful</h1>
           <Admin/>
           <div className="logout-container">
             <GoogleLogout
+              render={renderProps => (
+                <Button onClick={renderProps.onClick} variant="dark">Logout</Button>
+              )}
               clientId={clientId}
               buttonText="Logout"
               onLogoutSuccess={onLogoutSuccess}/>
@@ -81,14 +106,17 @@ function Login() {
         </div> 
 
         :<div className="login-container">
-          <h1 className="title-container">Login Successful</h1>
-          <div className="row-container">
-            <img height="500px" width="500px" src="emailCapture.svg"></img>
+          <div className="col-container">
+            <h1 className="title-container">Login Successful</h1>
             <GoogleLogout
+              render={renderProps => (
+                <Button onClick={renderProps.onClick} variant="dark">Logout</Button>
+              )}
               clientId={clientId}
               buttonText="Logout"
               onLogoutSuccess={onLogoutSuccess}/>
           </div>
+          <img height="500px" width="500px" src="welcome.svg"></img>
         </div>}
       </div>: null}
     </div>
