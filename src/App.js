@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 
 function Login() {
 
-  const clientId = "759073796632-us9c4tshsk2ls6fhtus10q1njv3bdv2t.apps.googleusercontent.com";
+  const clientId = "27021193844-7erhssfabe66ih8g02t0i2qfji55t3rr.apps.googleusercontent.com";
   const [loginButton, setLoginButton] = useState(true);
   const [logoutButton, setLogoutButton] = useState(false);
 
@@ -16,7 +16,7 @@ function Login() {
   const [admin, setAdmin] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:5000/users")
+    fetch("https://login-backend-015.herokuapp.com/users")
       .then(res => res.json()) 
         .then((result) => {
           console.log(result);

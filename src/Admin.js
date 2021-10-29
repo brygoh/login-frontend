@@ -21,7 +21,7 @@ export default function Admin() {
     });
   
     useEffect(() => {
-      fetch("http://localhost:5000/users")
+      fetch("https://login-backend-015.herokuapp.com/users")
         .then(res => res.json()) 
           .then((result) => {
             console.log(result);
@@ -32,7 +32,7 @@ export default function Admin() {
     }, [])
 
     const deleteUser = (id) => {
-        axios.delete('http://localhost:5000/users/' + id)
+        axios.delete('https://login-backend-015.herokuapp.com/users/' + id)
         .then(response => {
             console.log(response)
             const newData = items.filter(i => i._id !== id)
@@ -61,10 +61,10 @@ export default function Admin() {
     }
 
     function editSubmit(id) {
-        axios.post('http://localhost:5000/users/update/' + id, editData)
+        axios.post('https://login-backend-015.herokuapp.com/users/update/' + id, editData)
         .then(response => {
             console.log(response.data)
-            axios.get('http://localhost:5000/users/')
+            axios.get('https://login-backend-015.herokuapp.com/users')
             .then(res =>{
                 setItems(res.data)
             })
@@ -91,7 +91,7 @@ export default function Admin() {
 
     function submit(e) {
         e.preventDefault();
-        axios.post('http://localhost:5000/users/add/', data)
+        axios.post('https://login-backend-015.herokuapp.com/users/add/', data)
         .then(response => {
             console.log(response)
             const newData = [...items, data]
@@ -132,11 +132,11 @@ export default function Admin() {
                             <td>
                                 <input
                                     type="text"
-                                    id="name"
+                                    id="email"
                                     value={editData.email}
                                     onChange={e => editHandle(e)}
                                     required="required"
-                                    placeholder="Enter a name..."
+                                    placeholder="Enter a email..."
                                 />
                             </td>
                             <td>
