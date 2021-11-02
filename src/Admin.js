@@ -14,6 +14,11 @@ export default function Admin() {
         email:"",
         role:"",
     });
+    const [error, setError] = useState({
+        name:"",
+        email:"",
+        role:"",
+    })
     const [data, setData] = useState({
         name:"",
         email:"",
@@ -38,9 +43,11 @@ export default function Admin() {
             console.log(response)
             const newData = items.filter(i => i._id !== id)
             setItems(newData)
+            alert("User Deleted")
         })
         .catch(error => {
             console.log(error)
+            alert("User Not Deleted")
         })
     }
 
@@ -53,35 +60,62 @@ export default function Admin() {
         }
         setEditData(originalData)
     }
-
+    
     function editHandle(e) {
+        e.preventDefault();
         const newData = {...editData}
         if (e.target.id === 'name') {
-            newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
+            // newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
+            newData[e.target.id] = e.target.value
+            if (newData[e.target.id].match(/[^a-zA-Z]+$/))
+                error['name'] = 'Characters only'
+            else if (!newData[e.target.id])
+                error['name'] = 'Cannot be empty'
+            else
+                error['name'] = ''
+        }
+        else if (e.target.id === 'email') {
+            // newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
+            newData[e.target.id] = e.target.value
+            if (!/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newData[e.target.id]))
+                error['email'] = 'Invalid Email'
+            else if (!newData[e.target.id])
+                error['email'] = 'Cannot be empty'
+            else
+                error['email'] = ''
         }
         else {
             newData[e.target.id] = e.target.value
         }
+        setError(error)
         setEditData(newData)
         console.log(editData)
     }
 
     function editSubmit(id) {
-        axios.post('https://login-backend-015.herokuapp.com/users/update/' + id, editData)
-        .then(response => {
-            console.log(response.data)
-            axios.get('https://login-backend-015.herokuapp.com/users')
-            .then(res =>{
-                setItems(res.data)
+        if (error.name === '' && error.email === '') {
+            axios.post('https://login-backend-015.herokuapp.com/users/update/' + id, editData)
+            .then(response => {
+                console.log(response.data)
+                axios.get('https://login-backend-015.herokuapp.com/users')
+                .then(res =>{
+                    setItems(res.data)
+                    alert("User Updated")
+                })
+                .catch(error => {
+                    console.log(error)
+                    alert("User Not Updated")
+                })
             })
             .catch(error => {
                 console.log(error)
+                alert("User Not Updated")
             })
-        })
-        .catch(error => {
-            console.log(error)
-        })
-        setEditId('')
+            setEditId('')
+        }
+        else {
+            alert(error.name + '\n' + error.email)
+        }
     }
 
     function cancelSubmit() {
@@ -90,27 +124,28 @@ export default function Admin() {
 
     function handle(e) {
         const newData = {...data}
-        if (e.target.id === 'name') {
-            newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
-        }
-        else {
-            newData[e.target.id] = e.target.value
-        }
+        newData[e.target.id] = e.target.value
         setData(newData)
         console.log(data)
     }
 
     function submit(e) {
-        e.preventDefault();
-        axios.post('https://login-backend-015.herokuapp.com/users/add/', data)
-        .then(response => {
-            console.log(response)
-            const newData = [...items, data]
-            setItems(newData)
-        })
-        .catch(error => {
-            console.log(error)
-        })
+        if (!data.name.match(/[^a-zA-Z]+$/) && /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(data.email)) {
+            axios.post('https://login-backend-015.herokuapp.com/users/add/', data)
+            .then(response => {
+                console.log(response)
+                const newData = [...items, data]
+                setItems(newData)
+                alert("User Added")
+            })
+            .catch(error => {
+                console.log(error)
+                alert("User Not Added")
+            })
+        }
+        else {
+            alert("Can't Add User")
+        }
     }
 
     return(
@@ -155,6 +190,7 @@ export default function Admin() {
                                     required="required"
                                     placeholder="Enter a name..."
                                 />
+                                <span style={{color:"red"}}>{error.name}</span>
                             </td>
                             <td>
                                 <input
@@ -165,6 +201,7 @@ export default function Admin() {
                                     required="required"
                                     placeholder="Enter a email..."
                                 />
+                                <span style={{color:"red"}}>{error.email}</span>
                             </td>
                             <td style={{width:'100px'}}>
                                 <select
@@ -199,23 +236,29 @@ export default function Admin() {
                     </Fragment>)}    
                 </tbody>
             </table>
-            <form className="form-container" onSubmit={(e) => submit(e)}>
-                <input className='input-inputs'
-                    type="text"
-                    id="name"
-                    value={data.name}
-                    onChange={e => handle(e)}
-                    required="required"
-                    placeholder="Enter a name..."
-                />
-                <input className='input-inputs'
-                    type="email"
-                    id="email"
-                    value={data.email}
-                    onChange={e => handle(e)}
-                    required="required"
-                    placeholder="Enter an email..."
-                />
+            <div className="form-container">
+                <div styles={{display:'flex', flexDirection:'row'}}>
+                    <input className='input-inputs'
+                        type="text"
+                        id="name"
+                        value={data.name}
+                        onChange={e => handle(e)}
+                        required="required"
+                        placeholder="Enter a name..."
+                    />
+                    {/* <span style={{color:"red"}}>{error.name}</span> */}
+                </div>
+                <div styles={{display:'flex', flexDirection:'row'}}>
+                    <input className='input-inputs'
+                        type="email"
+                        id="email"
+                        value={data.email}
+                        onChange={e => handle(e)}
+                        required="required"
+                        placeholder="Enter an email..."
+                    />
+                    {/* <span style={{color:"red"}}>{error.email}</span> */}
+                </div>
                 <select className="select-selects"
                     type="text"
                     id="role"
@@ -226,8 +269,8 @@ export default function Admin() {
                     <option value="Admin">Admin</option>
                     <option value="Normal">Normal</option>
                 </select>
-                <button className='button-buttons'>Add</button>
-            </form>  
+                <button className='button-buttons' onClick={()=>submit()}>Add</button>
+            </div>  
         </div>
     )
 }
