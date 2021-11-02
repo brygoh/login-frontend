@@ -3,7 +3,7 @@ import axios from 'axios';
 import './Admin.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {AiFillEdit, AiFillDelete, AiFillCheckSquare, AiFillCloseCircle} from 'react-icons/ai';
-
+import 'font-awesome/css/font-awesome.min.css';
 
 export default function Admin() {
 
@@ -17,8 +17,9 @@ export default function Admin() {
     const [data, setData] = useState({
         name:"",
         email:"",
-        role:"",
+        role:"Admin",
     });
+    const [filter, setFilter] = useState("");
   
     useEffect(() => {
       fetch("https://login-backend-015.herokuapp.com/users")
@@ -55,7 +56,12 @@ export default function Admin() {
 
     function editHandle(e) {
         const newData = {...editData}
-        newData[e.target.id] = e.target.value
+        if (e.target.id === 'name') {
+            newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
+        }
+        else {
+            newData[e.target.id] = e.target.value
+        }
         setEditData(newData)
         console.log(editData)
     }
@@ -84,7 +90,12 @@ export default function Admin() {
 
     function handle(e) {
         const newData = {...data}
-        newData[e.target.id] = e.target.value
+        if (e.target.id === 'name') {
+            newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
+        }
+        else {
+            newData[e.target.id] = e.target.value
+        }
         setData(newData)
         console.log(data)
     }
@@ -104,19 +115,35 @@ export default function Admin() {
 
     return(
         <div className = "card-container">
+            <div class="input-group rounded" style={{width:'80%', padding:'10px 0px'}}>
+                <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
+                aria-describedby="search-addon" onChange={event => {setFilter(event.target.value);}}/>
+                <span class="input-group-text border-0" id="search-addon">
+                    <i class="fa fa-search"></i>
+                </span>
+            </div>
             <table>
                 <thead>
-                    <tr> 
+                    <tr>
                         <th>Name</th>   
                         <th>Email</th>
-                        <th>Role</th>
-                        <th></th>
-                        <th></th>
+                        <th style={{width:'100px'}}>Role</th>
+                        <th style={{width:'47.5px'}}></th>
+                        <th style={{width:'47.5px'}}></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {items.map((item) =>
-                    <Fragment>
+                    {items.filter((target) => {
+                        if (filter === "")
+                            return target;
+                        else if (target.name.toLowerCase().includes(filter.toLowerCase())){
+                            return target;
+                        }
+                        else if (target.email.toLowerCase().includes(filter.toLowerCase())){
+                            return target;
+                        }
+                    })
+                    .map((item) => <Fragment>
                         {editId === item._id ?
                         (<tr>
                             <td>
@@ -131,7 +158,7 @@ export default function Admin() {
                             </td>
                             <td>
                                 <input
-                                    type="text"
+                                    type="email"
                                     id="email"
                                     value={editData.email}
                                     onChange={e => editHandle(e)}
@@ -139,7 +166,7 @@ export default function Admin() {
                                     placeholder="Enter a email..."
                                 />
                             </td>
-                            <td>
+                            <td style={{width:'100px'}}>
                                 <select
                                     type="text"
                                     id="role"
@@ -151,21 +178,21 @@ export default function Admin() {
                                     <option value="Normal">Normal</option>
                                 </select>
                             </td>   
-                            <td>
+                            <td style={{width:'40px'}}>
                                 <AiFillCheckSquare onClick={() => editSubmit(item._id)}/>
                             </td>
-                            <td>
+                            <td style={{width:'40px'}}>
                                 <AiFillCloseCircle onClick={() => cancelSubmit()}/>
                             </td>
                         </tr>):
                         (<tr>
                             <td>{item.name}</td>
                             <td>{item.email}</td>
-                            <td>{item.role}</td>
-                            <td>
+                            <td style={{width:'100px'}}>{item.role}</td>
+                            <td style={{width:'40px'}}>
                                 <AiFillEdit onClick={() => editUser(item._id, item.name, item.email, item.role)}/>
                             </td>
-                            <td>
+                            <td style={{width:'40px'}}>
                                 <AiFillDelete onClick={() => deleteUser(item._id)}/>
                             </td>
                         </tr>)}
