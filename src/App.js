@@ -3,6 +3,7 @@ import {GoogleLogin, GoogleLogout} from 'react-google-login';
 import './App.css';
 import Admin from './Admin';
 import Button from 'react-bootstrap/Button';
+const jwt = require('jsonwebtoken');
 
 function Login() {
 
@@ -15,8 +16,8 @@ function Login() {
   const [check, setCheck] = useState(false);
   const [admin, setAdmin] = useState(false);
 
-  useEffect(() => {
-    fetch("https://login-backend-015.herokuapp.com/users")
+  useEffect(async () => {
+    await fetch("https://login-backend-015.herokuapp.com/users")
       .then(res => res.json()) 
         .then((result) => {
           console.log(result);
@@ -31,6 +32,11 @@ function Login() {
       if (String(items[i].email) === String(res.profileObj.email)) {
         if (String(items[i].role) === 'Admin') {
           setAdmin(true);
+          const token = jwt.sign(
+            {data: items[i]},
+            '\rA=KD&Jv78#"q.V)L%>5#8L[/tG98j5y%CBZ66q(q4Lc#~N+F'
+          )
+          localStorage.setItem('authToken', token);
         }
         setCheck(true);
         setLoginButton(false);

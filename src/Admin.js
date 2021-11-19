@@ -4,8 +4,15 @@ import './Admin.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {AiFillEdit, AiFillDelete, AiFillCheckSquare, AiFillCloseCircle} from 'react-icons/ai';
 import 'font-awesome/css/font-awesome.min.css';
+import Pagination from "./Pagination";
 
 export default function Admin() {
+
+    const api = "https://login-backend-015.herokuapp.com/users";
+    const localhost = "http://localhost:5000/users";
+
+    const [page, setPage] = useState(1);
+    const [pages, setPages] = useState(1);
 
     const [items, setItems] = useState([]);
     const [editId, setEditId] = useState(['']);
@@ -26,19 +33,20 @@ export default function Admin() {
     });
     const [filter, setFilter] = useState("");
   
-    useEffect(() => {
-      fetch("https://login-backend-015.herokuapp.com/users")
-        .then(res => res.json()) 
-          .then((result) => {
-            console.log(result);
-            setItems(result);
-          }, (error) => {
-            console.log(error);
-          })
-    }, [])
+    useEffect(async () => {
+        fetch(localhost + `?page=${page}&filter=${filter}`)
+            .then(res => res.json()) 
+            .then((result) => {
+                console.log(result);
+                setPages(result.pages);
+                setItems(result.data);
+            }, (error) => {
+                console.log(error);
+            })
+    }, [page, filter])
 
     const deleteUser = (id) => {
-        axios.delete('https://login-backend-015.herokuapp.com/users/' + id)
+        axios.delete(localhost + '/' + id)
         .then(response => {
             console.log(response)
             const newData = items.filter(i => i._id !== id)
@@ -168,17 +176,7 @@ export default function Admin() {
                     </tr>
                 </thead>
                 <tbody>
-                    {items.filter((target) => {
-                        if (filter === "")
-                            return target;
-                        else if (target.name.toLowerCase().includes(filter.toLowerCase())){
-                            return target;
-                        }
-                        else if (target.email.toLowerCase().includes(filter.toLowerCase())){
-                            return target;
-                        }
-                    })
-                    .map((item) => <Fragment>
+                    {items.map((item) => <Fragment>
                         {editId === item._id ?
                         (<tr>
                             <td>
@@ -236,6 +234,7 @@ export default function Admin() {
                     </Fragment>)}    
                 </tbody>
             </table>
+            <Pagination page={page} pages={pages} changePage={setPage} />
             <div className="form-container">
                 <div styles={{display:'flex', flexDirection:'row'}}>
                     <input className='input-inputs'
