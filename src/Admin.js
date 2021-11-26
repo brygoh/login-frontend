@@ -20,6 +20,7 @@ export default function Admin() {
         name:"",
         email:"",
         role:"",
+        token:localStorage.getItem('authToken')
     });
     const [error, setError] = useState({
         name:"",
@@ -30,14 +31,15 @@ export default function Admin() {
         name:"",
         email:"",
         role:"Admin",
+        token:localStorage.getItem('authToken')
     });
     const [filter, setFilter] = useState("");
   
     useEffect(async () => {
-        fetch(localhost + `?page=${page}&filter=${filter}`)
+        fetch(api + `?page=${page}&filter=${filter}`)
             .then(res => res.json()) 
             .then((result) => {
-                console.log(result);
+                console.log(result.data);
                 setPages(result.pages);
                 setItems(result.data);
             }, (error) => {
@@ -46,7 +48,7 @@ export default function Admin() {
     }, [page, filter])
 
     const deleteUser = (id) => {
-        axios.delete(localhost + '/' + id)
+        axios.delete(api + '/' + id, {data:{token:localStorage.getItem('authToken')}})
         .then(response => {
             console.log(response)
             const newData = items.filter(i => i._id !== id)
@@ -105,8 +107,9 @@ export default function Admin() {
             axios.post('https://login-backend-015.herokuapp.com/users/update/' + id, editData)
             .then(response => {
                 console.log(response.data)
-                axios.get('https://login-backend-015.herokuapp.com/users')
-                .then(res =>{
+                axios.get('https://login-backend-015.herokuapp.com/users/')
+                .then(res => {
+                    console.log(res.data)
                     setItems(res.data)
                     alert("User Updated")
                 })
@@ -139,7 +142,7 @@ export default function Admin() {
 
     function submit(e) {
         if (!data.name.match(/[^a-zA-Z]+$/) && /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(data.email)) {
-            axios.post('https://login-backend-015.herokuapp.com/users/add/', data)
+            axios.post(localhost + '/add/', data)
             .then(response => {
                 console.log(response)
                 const newData = [...items, data]
@@ -245,7 +248,7 @@ export default function Admin() {
                         required="required"
                         placeholder="Enter a name..."
                     />
-                    {/* <span style={{color:"red"}}>{error.name}</span> */}
+                    <span style={{color:"red"}}>{error.name}</span>
                 </div>
                 <div styles={{display:'flex', flexDirection:'row'}}>
                     <input className='input-inputs'
@@ -256,7 +259,6 @@ export default function Admin() {
                         required="required"
                         placeholder="Enter an email..."
                     />
-                    {/* <span style={{color:"red"}}>{error.email}</span> */}
                 </div>
                 <select className="select-selects"
                     type="text"
