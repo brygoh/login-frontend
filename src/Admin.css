@@ -50,7 +50,7 @@ td {
     align-items:center;
     justify-content:space-between;
     flex-direction:row;
-    padding:10px 0px
+    padding-bottom:10px
 }
 
 .input-inputs {

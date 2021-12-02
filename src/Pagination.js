@@ -1,4 +1,5 @@
 import "./Pagination.css";
+import 'font-awesome/css/font-awesome.min.css';
 
 const Pagination = ({ page, pages, changePage }) => {
   let middlePagination;

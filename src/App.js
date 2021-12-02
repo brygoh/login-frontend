@@ -34,7 +34,7 @@ function Login() {
           setAdmin(true);
           const token = jwt.sign(
             {data: items[i]},
-            '\rA=KD&Jv78#"q.V)L%>5#8L[/tG98j5y%CBZ66q(q4Lc#~N+F'
+            'A=KD&Jv78#"q.V)L%>5#8L[/tG98j5y%CBZ66q(q4Lc#~N+F'
           )
           localStorage.setItem('authToken', token);
         }
