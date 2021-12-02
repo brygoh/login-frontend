@@ -142,7 +142,7 @@ export default function Admin() {
 
     function submit(e) {
         if (!data.name.match(/[^a-zA-Z]+$/) && /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(data.email)) {
-            axios.post(localhost + '/add/', data)
+            axios.post(api + '/add/', data)
             .then(response => {
                 console.log(response)
                 const newData = [...items, data]
