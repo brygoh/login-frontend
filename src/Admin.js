@@ -66,7 +66,8 @@ export default function Admin() {
         const originalData = {
             name:name,
             email:email,
-            role:role
+            role:role,
+            token:localStorage.getItem('authToken')
         }
         setEditData(originalData)
     }
@@ -74,14 +75,15 @@ export default function Admin() {
     function editHandle(e) {
         e.preventDefault();
         const newData = {...editData}
+        console.log(newData)
         if (e.target.id === 'name') {
             // newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
             newData[e.target.id] = e.target.value
-            if (newData[e.target.id].match(/[^a-zA-Z]+$/))
+            if (/[^a-zA-Z]+$/.test(newData[e.target.id]))
                 error['name'] = 'Characters only'
             else if (!newData[e.target.id])
                 error['name'] = 'Cannot be empty'
-            else
+            else if (/^[a-zA-Z]+$/.test(newData[e.target.id]))
                 error['name'] = ''
         }
         else if (e.target.id === 'email') {
@@ -104,13 +106,13 @@ export default function Admin() {
 
     function editSubmit(id) {
         if (error.name === '' && error.email === '') {
-            axios.post('https://login-backend-015.herokuapp.com/users/update/' + id, editData)
+            axios.post(api + '/update/' + id, editData)
             .then(response => {
                 console.log(response.data)
-                axios.get('https://login-backend-015.herokuapp.com/users/')
+                axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
                 .then(res => {
-                    console.log(res.data)
-                    setItems(res.data)
+                    console.log(res.data.data)
+                    setItems(res.data.data)
                     alert("User Updated")
                 })
                 .catch(error => {
@@ -248,7 +250,7 @@ export default function Admin() {
                         required="required"
                         placeholder="Enter a name..."
                     />
-                    <span style={{color:"red"}}>{error.name}</span>
+                    {/* <span style={{color:"red"}}>{error.name}</span> */}
                 </div>
                 <div styles={{display:'flex', flexDirection:'row'}}>
                     <input className='input-inputs'

@@ -16,12 +16,15 @@ function Login() {
   const [check, setCheck] = useState(false);
   const [admin, setAdmin] = useState(false);
 
+  const page = 1;
+  const filter = '';
+
   useEffect(async () => {
     await fetch("https://login-backend-015.herokuapp.com/users")
       .then(res => res.json()) 
         .then((result) => {
-          console.log(result);
-          setItems(result);
+          console.log(result.original);
+          setItems(result.original);
         }, (error) => {
           console.log(error);
         })
@@ -29,6 +32,7 @@ function Login() {
 
   const onSuccess = (res) => {
     for (var i in items.map(item => item.email)) {
+      console.log(items[i])
       if (String(items[i].email) === String(res.profileObj.email)) {
         if (String(items[i].role) === 'Admin') {
           setAdmin(true);
