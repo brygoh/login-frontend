@@ -28,6 +28,11 @@ export default function Admin() {
         email:"",
         role:"",
     })
+    const [addError, setAddError] = useState({
+        name:"",
+        email:"",
+        role:"",
+    })
     const [data, setData] = useState({
         name:"",
         email:"",
@@ -111,7 +116,7 @@ export default function Admin() {
         if (e.target.id === 'name') {
             // newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
             newData[e.target.id] = e.target.value
-            if (/[^a-zA-Z]+$/.test(newData[e.target.id]))
+            if (/[^a-zA-Z ]+$/.test(newData[e.target.id]))
                 error['name'] = 'Characters only'
             else if (!newData[e.target.id])
                 error['name'] = 'Cannot be empty'
@@ -181,7 +186,7 @@ export default function Admin() {
     }
 
     function submit(e) {
-        if (!data.name.match(/[^a-zA-Z]+$/) && /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(data.email)) {
+        if (!/[^a-zA-Z ]+$/.test(data.name) && /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(data.email)) {
             axios.post(api + '/add/', data)
             .then(response => {
                 console.log(response)
@@ -208,7 +213,7 @@ export default function Admin() {
                     .then(res => {
                         console.log(res.data.data)
                         setItems(res.data.data)
-                        setPage(res.data.page)
+                        setPage(res.data.pages)
                         setPages(res.data.pages)
                         setCount(res.data.count)
                         alert("User Added")
