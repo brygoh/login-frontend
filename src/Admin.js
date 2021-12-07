@@ -51,9 +51,19 @@ export default function Admin() {
         axios.delete(api + '/' + id, {data:{token:localStorage.getItem('authToken')}})
         .then(response => {
             console.log(response)
-            const newData = items.filter(i => i._id !== id)
-            setItems(newData)
-            alert("User Deleted")
+            // const newData = items.filter(i => i._id !== id)
+            // setItems(newData)
+            // alert("User Deleted")
+            axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
+                .then(res => {
+                    console.log(res.data.data)
+                    setItems(res.data.data)
+                    alert("User Deleted")
+                })
+                .catch(error => {
+                    console.log(error)
+                    alert("User Not Deleted")
+                })
         })
         .catch(error => {
             console.log(error)
@@ -147,9 +157,19 @@ export default function Admin() {
             axios.post(api + '/add/', data)
             .then(response => {
                 console.log(response)
-                const newData = [...items, data]
-                setItems(newData)
-                alert("User Added")
+                // const newData = [...items, data]
+                // setItems(newData)
+                // alert("User Added")
+                axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
+                .then(res => {
+                    console.log(res.data.data)
+                    setItems(res.data.data)
+                    alert("User Added")
+                })
+                .catch(error => {
+                    console.log(error)
+                    alert("User Not Added")
+                })
             })
             .catch(error => {
                 console.log(error)
