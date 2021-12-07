@@ -13,6 +13,7 @@ export default function Admin() {
 
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
+    const [count, setCount] = useState();
 
     const [items, setItems] = useState([]);
     const [editId, setEditId] = useState(['']);
@@ -42,6 +43,7 @@ export default function Admin() {
                 console.log(result.data);
                 setPages(result.pages);
                 setItems(result.data);
+                setCount(result.count);
             }, (error) => {
                 console.log(error);
             })
@@ -54,16 +56,36 @@ export default function Admin() {
             // const newData = items.filter(i => i._id !== id)
             // setItems(newData)
             // alert("User Deleted")
-            axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
+            if (count%10 < 2) {
+            axios.get(api + `?page=${page-1}&filter=${filter}`, [page, filter])
                 .then(res => {
-                    console.log(res.data.data)
+                    console.log(res.data)
                     setItems(res.data.data)
+                    setPage(res.data.page)
+                    setPages(res.data.pages)
+                    setCount(res.data.count)
                     alert("User Deleted")
                 })
                 .catch(error => {
                     console.log(error)
                     alert("User Not Deleted")
                 })
+            }
+            else {
+                axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
+                .then(res => {
+                    console.log(res.data)
+                    setItems(res.data.data)
+                    setPage(res.data.page)
+                    setPages(res.data.pages)
+                    setCount(res.data.count)
+                    alert("User Deleted")
+                })
+                .catch(error => {
+                    console.log(error)
+                    alert("User Not Deleted")
+                })
+            }
         })
         .catch(error => {
             console.log(error)
@@ -143,6 +165,12 @@ export default function Admin() {
 
     function cancelSubmit() {
         setEditId('')
+        const blankState = {
+            name:'',
+            email:'',
+            role:'',
+        }
+        setError(blankState)
     }
 
     function handle(e) {
@@ -160,16 +188,36 @@ export default function Admin() {
                 // const newData = [...items, data]
                 // setItems(newData)
                 // alert("User Added")
-                axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
-                .then(res => {
-                    console.log(res.data.data)
-                    setItems(res.data.data)
-                    alert("User Added")
-                })
-                .catch(error => {
-                    console.log(error)
-                    alert("User Not Added")
-                })
+                if (count%10===0) {
+                    axios.get(api + `?page=${page+1}&filter=${filter}`, [page, filter])
+                    .then(res => {
+                        console.log(res.data.data)
+                        setItems(res.data.data)
+                        setPage(res.data.page)
+                        setPages(res.data.pages)
+                        setCount(res.data.count)
+                        alert("User Added")
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        alert("User Not Added")
+                    })
+                }
+                else {
+                    axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
+                    .then(res => {
+                        console.log(res.data.data)
+                        setItems(res.data.data)
+                        setPage(res.data.page)
+                        setPages(res.data.pages)
+                        setCount(res.data.count)
+                        alert("User Added")
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        alert("User Not Added")
+                    })
+                }
             })
             .catch(error => {
                 console.log(error)
