@@ -3,11 +3,11 @@ import {GoogleLogin, GoogleLogout} from 'react-google-login';
 import './App.css';
 import Admin from './Admin';
 import Button from 'react-bootstrap/Button';
-const jwt = require('jsonwebtoken');
+import axios from 'axios';
 
 function Login() {
 
-  const clientId = "27021193844-7erhssfabe66ih8g02t0i2qfji55t3rr.apps.googleusercontent.com";
+  const clientId = process.env.REACT_APP_GOOGLE_CLIENT;
   const [loginButton, setLoginButton] = useState(true);
   const [logoutButton, setLogoutButton] = useState(false);
 
@@ -16,11 +16,8 @@ function Login() {
   const [check, setCheck] = useState(false);
   const [admin, setAdmin] = useState(false);
 
-  const page = 1;
-  const filter = '';
-
   useEffect(async () => {
-    await fetch("https://login-backend-015.herokuapp.com/users")
+    await fetch(process.env.REACT_APP_API)
       .then(res => res.json()) 
         .then((result) => {
           console.log(result.original);
@@ -32,17 +29,21 @@ function Login() {
 
   const onSuccess = (res) => {
     for (var i in items.map(item => item.email)) {
-      console.log(items[i])
       if (String(items[i].email) === String(res.profileObj.email)) {
         if (String(items[i].role) === 'Admin') {
           setAdmin(true);
-          const token = jwt.sign(
-            {data: items[i]},
-            'A=KD&Jv78#"q.V)L%>5#8L[/tG98j5y%CBZ66q(q4Lc#~N+F'
-          )
-          localStorage.setItem('authToken', token);
         }
-        setCheck(true);
+        axios.post(process.env.REACT_APP_LOCALHOST + '/login',
+          { email: items[i].email,
+            name: items[i].name,
+            role: items[i].role },
+            {headers: {"Authorization" : `Bearer ${res.tokenId}`}})
+          .then(response => {
+            localStorage.setItem('authToken', (response.data.token));
+            console.log(response.data.verify);
+            setCheck(response.data.verify);
+          })
+          .catch(err => console.log(err))
         setLoginButton(false);
         setLogoutButton(true);
         break;

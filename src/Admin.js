@@ -8,9 +8,6 @@ import Pagination from "./Pagination";
 
 export default function Admin() {
 
-    const api = "https://login-backend-015.herokuapp.com/users";
-    const localhost = "http://localhost:5000/users";
-
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
     const [count, setCount] = useState();
@@ -21,14 +18,8 @@ export default function Admin() {
         name:"",
         email:"",
         role:"",
-        token:localStorage.getItem('authToken')
     });
     const [error, setError] = useState({
-        name:"",
-        email:"",
-        role:"",
-    })
-    const [addError, setAddError] = useState({
         name:"",
         email:"",
         role:"",
@@ -37,12 +28,11 @@ export default function Admin() {
         name:"",
         email:"",
         role:"Admin",
-        token:localStorage.getItem('authToken')
     });
     const [filter, setFilter] = useState("");
   
     useEffect(async () => {
-        fetch(api + `?page=${page}&filter=${filter}`)
+        fetch(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`)
             .then(res => res.json()) 
             .then((result) => {
                 console.log(result.data);
@@ -55,14 +45,14 @@ export default function Admin() {
     }, [page, filter])
 
     const deleteUser = (id) => {
-        axios.delete(api + '/' + id, {data:{token:localStorage.getItem('authToken')}})
+        axios.delete(process.env.REACT_APP_API + '/' + id, {headers: {"Authorization" : `Bearer ${localStorage.getItem('authToken')}`}})
         .then(response => {
             console.log(response)
             // const newData = items.filter(i => i._id !== id)
             // setItems(newData)
             // alert("User Deleted")
             if (count%10 < 2) {
-            axios.get(api + `?page=${page-1}&filter=${filter}`, [page, filter])
+            axios.get(process.env.REACT_APP_API + `?page=${page-1}&filter=${filter}`, [page, filter])
                 .then(res => {
                     console.log(res.data)
                     setItems(res.data.data)
@@ -77,7 +67,7 @@ export default function Admin() {
                 })
             }
             else {
-                axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
+                axios.get(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`, [page, filter])
                 .then(res => {
                     console.log(res.data)
                     setItems(res.data.data)
@@ -104,7 +94,6 @@ export default function Admin() {
             name:name,
             email:email,
             role:role,
-            token:localStorage.getItem('authToken')
         }
         setEditData(originalData)
     }
@@ -143,10 +132,10 @@ export default function Admin() {
 
     function editSubmit(id) {
         if (error.name === '' && error.email === '') {
-            axios.post(api + '/update/' + id, editData)
+            axios.post(process.env.REACT_APP_API + '/update/' + id, editData, {headers: {"Authorization" : `Bearer ${localStorage.getItem('authToken')}`}})
             .then(response => {
                 console.log(response.data)
-                axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
+                axios.get(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`, [page, filter])
                 .then(res => {
                     console.log(res.data.data)
                     setItems(res.data.data)
@@ -187,14 +176,14 @@ export default function Admin() {
 
     function submit(e) {
         if (!/[^a-zA-Z ]+$/.test(data.name) && /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(data.email)) {
-            axios.post(api + '/add/', data)
+            axios.post(process.env.REACT_APP_API + '/add/', data, {headers: {"Authorization" : `Bearer ${localStorage.getItem('authToken')}`}})
             .then(response => {
                 console.log(response)
                 // const newData = [...items, data]
                 // setItems(newData)
                 // alert("User Added")
                 if (count%10===0) {
-                    axios.get(api + `?page=${page+1}&filter=${filter}`, [page, filter])
+                    axios.get(process.env.REACT_APP_API + `?page=${page+1}&filter=${filter}`, [page, filter])
                     .then(res => {
                         console.log(res.data.data)
                         setItems(res.data.data)
@@ -209,7 +198,7 @@ export default function Admin() {
                     })
                 }
                 else {
-                    axios.get(api + `?page=${page}&filter=${filter}`, [page, filter])
+                    axios.get(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`, [page, filter])
                     .then(res => {
                         console.log(res.data.data)
                         setItems(res.data.data)
