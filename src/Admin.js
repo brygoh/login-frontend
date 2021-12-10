@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {AiFillEdit, AiFillDelete, AiFillCheckSquare, AiFillCloseCircle} from 'react-icons/ai';
 import 'font-awesome/css/font-awesome.min.css';
 import Pagination from "./Pagination";
+import { Button, Modal } from 'react-bootstrap'
 
 export default function Admin() {
 
@@ -30,6 +31,9 @@ export default function Admin() {
         role:"Admin",
     });
     const [filter, setFilter] = useState("");
+
+    const [popup, setPopup] = useState(false);
+    const [message, setMessage] = useState('');
   
     useEffect(async () => {
         fetch(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`)
@@ -59,11 +63,13 @@ export default function Admin() {
                     setPage(res.data.page)
                     setPages(res.data.pages)
                     setCount(res.data.count)
-                    alert("User Deleted")
+                    setMessage("User Deleted")
+                    setPopup(true)
                 })
                 .catch(error => {
                     console.log(error)
-                    alert("User Not Deleted")
+                    setMessage("User Not Deleted")
+                    setPopup(true)
                 })
             }
             else {
@@ -74,17 +80,20 @@ export default function Admin() {
                     setPage(res.data.page)
                     setPages(res.data.pages)
                     setCount(res.data.count)
-                    alert("User Deleted")
+                    setMessage("User Deleted")
+                    setPopup(true)
                 })
                 .catch(error => {
                     console.log(error)
-                    alert("User Not Deleted")
+                    setMessage("User Not Deleted")
+                    setPopup(true)
                 })
             }
         })
         .catch(error => {
             console.log(error)
-            alert("User Not Deleted")
+            setMessage("User Not Deleted")
+            setPopup(true)
         })
     }
 
@@ -139,21 +148,25 @@ export default function Admin() {
                 .then(res => {
                     console.log(res.data.data)
                     setItems(res.data.data)
-                    alert("User Updated")
+                    setMessage("User Updated")
+                    setPopup(true)
                 })
                 .catch(error => {
                     console.log(error)
-                    alert("User Not Updated")
+                    setMessage("User Not Updated")
+                    setPopup(true)
                 })
             })
             .catch(error => {
                 console.log(error)
-                alert("User Not Updated")
+                setMessage("User Not Updated")
+                setPopup(true)
             })
             setEditId('')
         }
         else {
-            alert(error.name + '\n' + error.email)
+            setMessage(error.name + '\n' + error.email)
+            setPopup(true)
         }
     }
 
@@ -179,9 +192,6 @@ export default function Admin() {
             axios.post(process.env.REACT_APP_API + '/add/', data, {headers: {"Authorization" : `Bearer ${localStorage.getItem('authToken')}`}})
             .then(response => {
                 console.log(response)
-                // const newData = [...items, data]
-                // setItems(newData)
-                // alert("User Added")
                 if (count%10===0) {
                     axios.get(process.env.REACT_APP_API + `?page=${page+1}&filter=${filter}`, [page, filter])
                     .then(res => {
@@ -190,11 +200,13 @@ export default function Admin() {
                         setPage(res.data.page)
                         setPages(res.data.pages)
                         setCount(res.data.count)
-                        alert("User Added")
+                        setMessage("Added User")
+                        setPopup(true);
                     })
                     .catch(error => {
                         console.log(error)
-                        alert("User Not Added")
+                        setMessage("Can't Add User")
+                        setPopup(true);
                     })
                 }
                 else {
@@ -205,23 +217,29 @@ export default function Admin() {
                         setPage(res.data.pages)
                         setPages(res.data.pages)
                         setCount(res.data.count)
-                        alert("User Added")
+                        setMessage("Added User")
+                        setPopup(true);
                     })
                     .catch(error => {
                         console.log(error)
-                        alert("User Not Added")
+                        setMessage("Can't Add User")
+                        setPopup(true);
                     })
                 }
             })
             .catch(error => {
                 console.log(error)
-                alert("User Not Added")
+                setMessage("Can't Add User")
+                setPopup(true);
             })
         }
         else {
-            alert("Can't Add User")
+            setMessage("Can't Add User")
+            setPopup(true);
         }
     }
+
+    const handleClose = () => setPopup(false);
 
     return(
         <div className = "card-container">
@@ -335,7 +353,16 @@ export default function Admin() {
                     <option value="Normal">Normal</option>
                 </select>
                 <button className='button-buttons' onClick={()=>submit()}>Add</button>
-            </div>  
+            </div>
+            <Modal show={popup} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>React App Says:</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{message}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleClose}>Ok</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     )
 }

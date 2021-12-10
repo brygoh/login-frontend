@@ -33,7 +33,7 @@ function Login() {
         if (String(items[i].role) === 'Admin') {
           setAdmin(true);
         }
-        axios.post(process.env.REACT_APP_LOCALHOST + '/login',
+        axios.post(process.env.REACT_APP_API + '/login',
           { email: items[i].email,
             name: items[i].name,
             role: items[i].role },

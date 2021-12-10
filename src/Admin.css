@@ -67,3 +67,12 @@ td {
     width:100px;
     height:30px
 }
+
+.popup-container {
+    width:300px;
+    height:150px;
+    display:flex;
+    align-items:center;
+    justify-content:left;
+    padding:20px;
+}
