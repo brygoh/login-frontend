@@ -12,6 +12,7 @@ export default function Admin() {
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
     const [count, setCount] = useState();
+    const [filter, setFilter] = useState("");
 
     const [items, setItems] = useState([]);
     const [editId, setEditId] = useState(['']);
@@ -22,15 +23,17 @@ export default function Admin() {
     });
     const [error, setError] = useState({
         name:"",
-        email:"",
-        role:"",
+        email:""
     })
     const [data, setData] = useState({
         name:"",
         email:"",
-        role:"Admin",
+        role:"Admin"
     });
-    const [filter, setFilter] = useState("");
+    const [addError, setAddError] = useState({
+        name:'Namefield cannot be left empty',
+        email:'Emailfield cannot be left empty',
+    })
 
     const [popup, setPopup] = useState(false);
     const [message, setMessage] = useState('');
@@ -39,7 +42,6 @@ export default function Admin() {
         fetch(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`)
             .then(res => res.json()) 
             .then((result) => {
-                console.log(result.data);
                 setPages(result.pages);
                 setItems(result.data);
                 setCount(result.count);
@@ -48,17 +50,13 @@ export default function Admin() {
             })
     }, [page, filter])
 
+    // Handles delete request
     const deleteUser = (id) => {
         axios.delete(process.env.REACT_APP_API + '/' + id, {headers: {"Authorization" : `Bearer ${localStorage.getItem('authToken')}`}})
         .then(response => {
-            console.log(response)
-            // const newData = items.filter(i => i._id !== id)
-            // setItems(newData)
-            // alert("User Deleted")
             if (count%10 < 2) {
-            axios.get(process.env.REACT_APP_API + `?page=${page-1}&filter=${filter}`, [page, filter])
+                axios.get(process.env.REACT_APP_API + `?page=${page-1}&filter=${filter}`, [page, filter])
                 .then(res => {
-                    console.log(res.data)
                     setItems(res.data.data)
                     setPage(res.data.page)
                     setPages(res.data.pages)
@@ -68,14 +66,13 @@ export default function Admin() {
                 })
                 .catch(error => {
                     console.log(error)
-                    setMessage("User Not Deleted")
+                    setMessage("GET Request Error")
                     setPopup(true)
                 })
             }
             else {
                 axios.get(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`, [page, filter])
                 .then(res => {
-                    console.log(res.data)
                     setItems(res.data.data)
                     setPage(res.data.page)
                     setPages(res.data.pages)
@@ -85,18 +82,19 @@ export default function Admin() {
                 })
                 .catch(error => {
                     console.log(error)
-                    setMessage("User Not Deleted")
+                    setMessage("GET Request Error")
                     setPopup(true)
                 })
             }
         })
         .catch(error => {
             console.log(error)
-            setMessage("User Not Deleted")
+            setMessage("DELETE Request Error")
             setPopup(true)
         })
     }
 
+    // Handles the initial edits input
     const editUser = (id, name, email, role) => {
         setEditId(id)
         const originalData = {
@@ -107,27 +105,25 @@ export default function Admin() {
         setEditData(originalData)
     }
     
+    // Handles the input of the edits
     function editHandle(e) {
         e.preventDefault();
         const newData = {...editData}
-        console.log(newData)
         if (e.target.id === 'name') {
-            // newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
             newData[e.target.id] = e.target.value
             if (/[^a-zA-Z ]+$/.test(newData[e.target.id]))
-                error['name'] = 'Characters only'
+                error['name'] = 'Namefield can only have CHARACTERS only!'
             else if (!newData[e.target.id])
-                error['name'] = 'Cannot be empty'
+                error['name'] = 'Namefield cannot be left empty'
             else if (/^[a-zA-Z]+$/.test(newData[e.target.id]))
                 error['name'] = ''
         }
         else if (e.target.id === 'email') {
-            // newData[e.target.id] = e.target.value.replace(/[^a-zA-Z,/]/ig,'')
             newData[e.target.id] = e.target.value
             if (!/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newData[e.target.id]))
-                error['email'] = 'Invalid Email'
+                error['email'] = 'Invalid Email format!'
             else if (!newData[e.target.id])
-                error['email'] = 'Cannot be empty'
+                error['email'] = 'Emailfield cannot be left empty'
             else
                 error['email'] = ''
         }
@@ -136,9 +132,9 @@ export default function Admin() {
         }
         setError(error)
         setEditData(newData)
-        console.log(editData)
     }
 
+    // Handles the editing of data
     function editSubmit(id) {
         if (error.name === '' && error.email === '') {
             axios.post(process.env.REACT_APP_API + '/update/' + id, editData, {headers: {"Authorization" : `Bearer ${localStorage.getItem('authToken')}`}})
@@ -146,95 +142,116 @@ export default function Admin() {
                 console.log(response.data)
                 axios.get(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`, [page, filter])
                 .then(res => {
-                    console.log(res.data.data)
                     setItems(res.data.data)
                     setMessage("User Updated")
                     setPopup(true)
                 })
                 .catch(error => {
                     console.log(error)
-                    setMessage("User Not Updated")
+                    setMessage("GET Request Error")
                     setPopup(true)
                 })
             })
             .catch(error => {
                 console.log(error)
-                setMessage("User Not Updated")
+                setMessage("POST Request Error")
                 setPopup(true)
             })
             setEditId('')
         }
+        else if (error.name === '@' && error.email === '@') {
+            cancelSubmit();
+        }
         else {
-            setMessage(error.name + '\n' + error.email)
+            setMessage(error.name + ' ' + error.email)
             setPopup(true)
         }
     }
 
+    // Handles edit cancellation request
     function cancelSubmit() {
         setEditId('')
         const blankState = {
             name:'',
-            email:'',
-            role:'',
+            email:''
         }
         setError(blankState)
     }
 
+    // Handles the form inputs for adding new users
     function handle(e) {
         const newData = {...data}
-        newData[e.target.id] = e.target.value
+        if (e.target.id === 'name') {
+            newData[e.target.id] = e.target.value
+            if (/[^a-zA-Z ]+$/.test(newData[e.target.id]))
+                addError['name'] = 'Namefield can only have CHARACTERS with whitespaces only'
+            else if (!newData[e.target.id])
+                addError['name'] = 'Namefield cannot be left empty'
+            else if (/^[a-zA-Z]+$/.test(newData[e.target.id]))
+                addError['name'] = ''
+        }
+        else if (e.target.id === 'email') {
+            newData[e.target.id] = e.target.value
+            if (!/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(newData[e.target.id]))
+                addError['email'] = 'Invalid Email format!'
+            else if (!newData[e.target.id])
+                addError['email'] = 'Emailfield cannot be left empty'
+            else
+                addError['email'] = ''
+        }
+        else {
+            newData[e.target.id] = e.target.value
+        }
         setData(newData)
-        console.log(data)
     }
 
+    // Submit Post Request for adding new users
     function submit(e) {
-        if (!/[^a-zA-Z ]+$/.test(data.name) && /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(data.email)) {
-            axios.post(process.env.REACT_APP_API + '/add/', data, {headers: {"Authorization" : `Bearer ${localStorage.getItem('authToken')}`}})
+        if (addError.name === '' && addError.email === '') {
+            axios.post(process.env.REACT_APP_LOCALHOST + '/add/', data, {headers: {"Authorization" : `Bearer ${localStorage.getItem('authToken')}`}})
             .then(response => {
                 console.log(response)
                 if (count%10===0) {
                     axios.get(process.env.REACT_APP_API + `?page=${page+1}&filter=${filter}`, [page, filter])
                     .then(res => {
-                        console.log(res.data.data)
                         setItems(res.data.data)
                         setPage(res.data.page)
                         setPages(res.data.pages)
                         setCount(res.data.count)
-                        setMessage("Added User")
+                        setMessage("User Added")
                         setPopup(true);
                     })
                     .catch(error => {
-                        console.log(error)
-                        setMessage("Can't Add User")
+                        console.log(error);
+                        setMessage("GET Request Error");
                         setPopup(true);
                     })
                 }
                 else {
                     axios.get(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`, [page, filter])
                     .then(res => {
-                        console.log(res.data.data)
                         setItems(res.data.data)
                         setPage(res.data.pages)
                         setPages(res.data.pages)
                         setCount(res.data.count)
-                        setMessage("Added User")
+                        setMessage("User Added")
                         setPopup(true);
                     })
                     .catch(error => {
-                        console.log(error)
-                        setMessage("Can't Add User")
+                        console.log(error);
+                        setMessage("GET Request Error")
                         setPopup(true);
                     })
                 }
             })
             .catch(error => {
                 console.log(error)
-                setMessage("Can't Add User")
+                setMessage("POST Request Error");
                 setPopup(true);
             })
         }
         else {
-            setMessage("Can't Add User")
+            setMessage(addError['name'] + " " + addError['email']);
             setPopup(true);
         }
     }

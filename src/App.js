@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {GoogleLogin, GoogleLogout} from 'react-google-login';
 import './App.css';
 import Admin from './Admin';
+import {AiFillFileAdd} from 'react-icons/ai';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
@@ -14,6 +15,8 @@ function Login() {
   const [click, setClick] = useState(false);
   const [check, setCheck] = useState(false);
   const [admin, setAdmin] = useState(false);
+
+  const [who, setWho] = useState('');
 
   useEffect(() => {
     fetch(process.env.REACT_APP_API)
@@ -32,6 +35,7 @@ function Login() {
       if (String(items[i].email) === String(res.profileObj.email)) {
         if (String(items[i].role) === 'Admin') {
           setAdmin(true);
+          setWho(res.profileObj.email);
         }
         axios.post(process.env.REACT_APP_API + '/login',
           { email: items[i].email,
@@ -107,6 +111,7 @@ function Login() {
           <h1 className="title-container">Admin Login Successful</h1>
           <Admin/>
           <div className="logout-container">
+            <div className="name-container">Welcome {who} ... </div>
             <GoogleLogout
               render={renderProps => (
                 <Button onClick={renderProps.onClick} variant="dark">Logout</Button>

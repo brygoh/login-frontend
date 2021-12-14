@@ -28,6 +28,11 @@
     position:absolute;
     top:20px;
     right:20px;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
 }
 
 .admin-container {
@@ -36,4 +41,9 @@
     justify-content:space-evenly;
     display:flex;
     flex-direction:column;
+}
+
+.name-container {
+    padding:0px 40px;
+    font-size:18px;
 }
