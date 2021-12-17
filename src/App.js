@@ -5,6 +5,8 @@ import Admin from './Admin';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
+// comments
+
 function Login() {
 
   const [loginButton, setLoginButton] = useState(true);
@@ -81,7 +83,7 @@ function Login() {
               onFailure={onFailure}
               cookiePolicy={'single_host_origin'}/>
           </div>
-          <img height="500px" width="500px" src="emailCapture.svg"></img>
+          <img height="500px" width="500px" src="emailCapture.svg" alt="Login Page"></img>
         </div>: null}
 
       {(click && !check) ?
@@ -96,7 +98,7 @@ function Login() {
             buttonText="Logout"
             onLogoutSuccess={onLogoutSuccess}/>
         </div>
-        <img height="500px" width="500px" src="serverDown.svg"></img>
+        <img height="500px" width="500px" src="serverDown.svg" alt="Failure Landing Page"></img>
       </div>:null}
 
       {logoutButton && click && check ?
@@ -127,7 +129,7 @@ function Login() {
               buttonText="Logout"
               onLogoutSuccess={onLogoutSuccess}/>
           </div>
-          <img height="500px" width="500px" src="welcome.svg"></img>
+          <img height="500px" width="500px" src="welcome.svg" alt="Logout Page"></img>
         </div>}
       </div>: null}
     </div>

@@ -44,7 +44,7 @@ export default function Admin() {
     // middleware authorization bearer
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
   
-    useEffect(async () => {
+    useEffect(() => {
         fetch(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`)
             .then(res => res.json()) 
             .then((result) => {
@@ -84,7 +84,7 @@ export default function Admin() {
             setPopup(true)
         }
         else {
-            setMessage('1. ' + messageOne + " \n " + '2. ' + messageTwo)
+            setMessage(`1. ${messageOne} \n 2. ${messageTwo}`)
             setPopup(true)
         }
     }
@@ -170,6 +170,7 @@ export default function Admin() {
             addError['name'] = errorValidation(null, e.target.id, e.target.value)
         else if (e.target.id === 'email')
             addError['email'] = errorValidation(database, e.target.id, e.target.value)
+        setAddError(addError)
         setData(newData)
     }
 
@@ -203,11 +204,11 @@ export default function Admin() {
 
     return(
         <div className = "card-container">
-            <div class="input-group rounded" style={{width:'80%', padding:'10px 0px'}}>
-                <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
+            <div className="input-group rounded" style={{width:'80%', padding:'10px 0px'}}>
+                <input type="search" className="form-control rounded" placeholder="Search" aria-label="Search"
                 aria-describedby="search-addon" onChange={event => {setFilter(event.target.value);}}/>
-                <span class="input-group-text border-0" id="search-addon">
-                    <i class="fa fa-search"></i>
+                <span className="input-group-text border-0" id="search-addon">
+                    <i className="fa fa-search"></i>
                 </span>
             </div>
             <table>
