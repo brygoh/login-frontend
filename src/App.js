@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {GoogleLogin, GoogleLogout} from 'react-google-login';
 import './App.css';
 import Admin from './Admin';
-import {AiFillFileAdd} from 'react-icons/ai';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
@@ -22,7 +21,6 @@ function Login() {
     fetch(process.env.REACT_APP_API)
       .then(res => res.json()) 
         .then((result) => {
-          console.log(result.original);
           setItems(result.original);
         }, (error) => {
           console.log(error);
@@ -53,10 +51,6 @@ function Login() {
       }
     }
   }
-
-  useEffect(() => {
-    
-  })
 
   const onFailure = (res) => {
     console.log("Login Failure: ", res);

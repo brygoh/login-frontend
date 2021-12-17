@@ -76,3 +76,7 @@ td {
     justify-content:left;
     padding:20px;
 }
+
+.display-linebreak {
+    white-space: pre-line;
+  }
