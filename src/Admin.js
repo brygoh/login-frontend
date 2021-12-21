@@ -45,7 +45,7 @@ export default function Admin() {
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
   
     useEffect(() => {
-        fetch(process.env.REACT_APP_API + `?page=${page}&filter=${filter}`)
+        fetch(process.env.REACT_APP_API + `users/?page=${page}&filter=${filter}`, {headers:{'Authorization':`Bearer ${localStorage.getItem('authToken')}`}})
             .then(res => res.json()) 
             .then((result) => {
                 setPages(result.pages);
@@ -57,9 +57,9 @@ export default function Admin() {
             })
     }, [page, filter])
 
-    // Code refactoring for POST
+    // Code refactoring for GET
     function getReq(paged, succMsg) {
-        axios.get(process.env.REACT_APP_API + `?page=${page+paged}&filter=${filter}`, [page, filter])
+        axios.get(process.env.REACT_APP_API + `users/?page=${page+paged}&filter=${filter}`, [page, filter])
             .then(res => {
                 setItems(res.data.data)
                 setPage(res.data.page)
@@ -91,7 +91,7 @@ export default function Admin() {
 
     // Handles delete request
     const deleteUser = (id) => {
-        axios.delete(process.env.REACT_APP_API + '/' + id)
+        axios.delete(process.env.REACT_APP_API + 'users/' + id)
         .then(response => {
             console.log(response)
             if (count%10 < 2 && count%10!==0 && page===pages) {
@@ -134,7 +134,7 @@ export default function Admin() {
     // Handles the editing of data
     function editSubmit(id) {
         if (error.name === '' && error.email === '') {
-            axios.post(process.env.REACT_APP_API + '/update/' + id, editData)
+            axios.post(process.env.REACT_APP_API + 'users/update/' + id, editData)
             .then(response => {
                 console.log(response)
                 getReq(0, "User Updated")
@@ -177,7 +177,7 @@ export default function Admin() {
     // Submit Post Request for adding new users
     function submit(e) {
         if (addError.name === '' && addError.email === '') {
-            axios.post(process.env.REACT_APP_API + '/add/', data)
+            axios.post(process.env.REACT_APP_API + 'users/add/', data)
             .then(response => {
                 console.log(response)
                 if (count%10===0) {
