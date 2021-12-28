@@ -11,24 +11,15 @@ function Login() {
   const [loginButton, setLoginButton] = useState(true);
   const [logoutButton, setLogoutButton] = useState(false);
 
-  const [click, setClick] = useState(false);
   const [check, setCheck] = useState(false);
   const [admin, setAdmin] = useState(false);
-
   const [who, setWho] = useState('');
 
-  useEffect(() => {
-    if (click && check && admin) {
-      return <Redirect to='/admin'/>
-    }
-  })
-
   const onSuccess = (res) => {
-    setClick(true);
     axios.post(process.env.REACT_APP_API + 'login', 
       { email: res.profileObj.email },
       {headers: {"Authorization" : `Bearer ${res.tokenId}`}})
-      .then (response => {
+      .then(response => {
         localStorage.setItem('authToken', (response.data.token));
         setCheck(response.data.verify);
         setWho(res.profileObj.email)
@@ -46,6 +37,10 @@ function Login() {
 
   const onFailure = (res) => {
     console.log("Login Failure: ", res);
+    setLoginButton(true);
+    setLogoutButton(false);
+    setCheck(false);
+    setAdmin(false);
   }
 
   const onLogoutSuccess = () => {
@@ -54,7 +49,20 @@ function Login() {
     setLogoutButton(false);
     setCheck(false);
     setAdmin(false);
-    setClick(false);
+  }
+
+  function LogicGate() {
+    return(
+      <div className="app-container">
+        {loginButton && !logoutButton ? <Redirect to='/'/> : 
+        <div style={{width:'100%'}}>
+          {!check ? <Redirect to='/failure'/> : 
+          <div style={{width:'100%'}}>
+            {admin ? <Redirect to='/admin'/> : <Redirect to='/success'/>}  
+          </div>}
+        </div>}
+      </div>
+    );
   }
 
   function SuccessPage() {
@@ -139,16 +147,7 @@ function Login() {
 
   return (
     <Router>
-      {/* <div className="app-container">
-      {loginButton && !click && !check ? <HomePage/> : null}
-
-      {(click && !check) ? <FailurePage/> : null}
-
-      {logoutButton && click && check ?
-        <div style={{width:'100%'}}>
-          {admin ? <AdminPage/> : <SuccessPage/>}
-        </div> : null}
-      </div> */}
+      <LogicGate/>
 
       <Switch>
         <Route path='/success'>

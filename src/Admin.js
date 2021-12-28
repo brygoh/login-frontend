@@ -51,7 +51,7 @@ export default function Admin() {
                 setPages(result.pages);
                 setItems(result.data);
                 setCount(result.count);
-                setDatabase(result.original)
+                setDatabase(result.original);
             }, (error) => {
                 console.log(error);
             })
@@ -217,8 +217,8 @@ export default function Admin() {
                         <th>Name</th>   
                         <th>Email</th>
                         <th style={{width:'100px'}}>Role</th>
-                        <th style={{width:'47.5px'}}></th>
-                        <th style={{width:'47.5px'}}></th>
+                        <th style={{width:'47.5px'}}>-</th>
+                        <th style={{width:'47.5px'}}>-</th>
                     </tr>
                 </thead>
                 <tbody>
