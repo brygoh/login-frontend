@@ -11,56 +11,46 @@ function Login() {
   const [loginButton, setLoginButton] = useState(true);
   const [logoutButton, setLogoutButton] = useState(false);
 
-  const [check, setCheck] = useState(false);
-  const [admin, setAdmin] = useState(false);
+  const [verify, setVerify] = useState('');
   const [who, setWho] = useState('');
 
-  const onSuccess = (res) => {
+  const onSuccess = (res) => {    
     axios.post(process.env.REACT_APP_API + 'login', 
       { email: res.profileObj.email },
       {headers: {"Authorization" : `Bearer ${res.tokenId}`}})
       .then(response => {
         localStorage.setItem('authToken', (response.data.token));
-        setCheck(response.data.verify);
+        setVerify(response.data.admin)
         setWho(res.profileObj.email)
-        if (response.data.admin === 'Admin') 
-          setAdmin(true)
-        else
-          setAdmin(false)
       })
       .catch(err => {
         console.log(err)
       })
-      setLoginButton(false);
-      setLogoutButton(true);
+    setLoginButton(false);
+    setLogoutButton(true);
   }
 
   const onFailure = (res) => {
     console.log("Login Failure: ", res);
     setLoginButton(true);
     setLogoutButton(false);
-    setCheck(false);
-    setAdmin(false);
+    setVerify('')
   }
 
   const onLogoutSuccess = () => {
     console.log("Logout Success: ");
     setLoginButton(true);
     setLogoutButton(false);
-    setCheck(false);
-    setAdmin(false);
+    setVerify('')
   }
 
   function LogicGate() {
     return(
       <div className="app-container">
         {loginButton && !logoutButton ? <Redirect to='/'/> : 
-        <div style={{width:'100%'}}>
-          {!check ? <Redirect to='/failure'/> : 
-          <div style={{width:'100%'}}>
-            {admin ? <Redirect to='/admin'/> : <Redirect to='/success'/>}  
-          </div>}
-        </div>}
+        verify==='Admin' ? <Redirect to='/admin'/> : 
+        verify==='Normal' ? <Redirect to='/success'/> : 
+        verify==='DONOTEXIST' ? <Redirect to='/failure'/> : null}  
       </div>
     );
   }

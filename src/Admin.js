@@ -12,7 +12,7 @@ export default function Admin() {
 
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
-    const [count, setCount] = useState();
+    const [count, setCount] = useState(0);
     const [filter, setFilter] = useState("");
 
     const [items, setItems] = useState([]);
@@ -45,16 +45,20 @@ export default function Admin() {
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
   
     useEffect(() => {
+        let isMounted = true;
         fetch(process.env.REACT_APP_API + `users/?page=${page}&filter=${filter}`, {headers:{'Authorization':`Bearer ${localStorage.getItem('authToken')}`}})
             .then(res => res.json()) 
             .then((result) => {
-                setPages(result.pages);
-                setItems(result.data);
-                setCount(result.count);
-                setDatabase(result.original);
+                if (isMounted) {
+                    setPages(result.pages);
+                    setItems(result.data);
+                    setCount(result.count);
+                    setDatabase(result.original);
+                }
             }, (error) => {
                 console.log(error);
             })
+        return () => { isMounted = false }
     }, [page, filter])
 
     // Code refactoring for GET
@@ -206,7 +210,7 @@ export default function Admin() {
         <div className = "card-container">
             <div className="input-group rounded" style={{width:'80%', padding:'10px 0px'}}>
                 <input type="search" className="form-control rounded" placeholder="Search" aria-label="Search"
-                aria-describedby="search-addon" onChange={event => {setFilter(event.target.value);}}/>
+                aria-describedby="search-addon" onChange={event => {setFilter(event.target.value); setPage(1)}}/>
                 <span className="input-group-text border-0" id="search-addon">
                     <i className="fa fa-search"></i>
                 </span>
@@ -217,8 +221,8 @@ export default function Admin() {
                         <th>Name</th>   
                         <th>Email</th>
                         <th style={{width:'100px'}}>Role</th>
-                        <th style={{width:'47.5px'}}>-</th>
-                        <th style={{width:'47.5px'}}>-</th>
+                        <th style={{width:'47.5px'}}></th>
+                        <th style={{width:'47.5px'}}></th>
                     </tr>
                 </thead>
                 <tbody>
