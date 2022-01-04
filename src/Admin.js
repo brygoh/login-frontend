@@ -204,17 +204,8 @@ export default function Admin() {
         }
     }
 
-    const handleClose = () => setPopup(false);
-
-    return(
-        <div className = "card-container">
-            <div className="input-group rounded" style={{width:'80%', padding:'10px 0px'}}>
-                <input type="search" className="form-control rounded" placeholder="Search" aria-label="Search"
-                aria-describedby="search-addon" onChange={event => {setFilter(event.target.value); setPage(1)}}/>
-                <span className="input-group-text border-0" id="search-addon">
-                    <i className="fa fa-search"></i>
-                </span>
-            </div>
+    function Table() {
+        return(
             <table>
                 <thead>
                     <tr>
@@ -284,7 +275,11 @@ export default function Admin() {
                     </Fragment>)}    
                 </tbody>
             </table>
-            <Pagination page={page} pages={pages} changePage={setPage} />
+        );
+    }
+
+    function AddForm() {
+        return (
             <div className="form-container">
                 <div styles={{display:'flex', flexDirection:'row'}}>
                     <input className='input-inputs'
@@ -295,7 +290,6 @@ export default function Admin() {
                         required="required"
                         placeholder="Enter a name..."
                     />
-                    {/* <span style={{color:"red"}}>{error.name}</span> */}
                 </div>
                 <div styles={{display:'flex', flexDirection:'row'}}>
                     <input className='input-inputs'
@@ -319,15 +313,36 @@ export default function Admin() {
                 </select>
                 <button className='button-buttons' onClick={()=>submit()}>Add</button>
             </div>
-            <Modal show={popup} onHide={handleClose}>
+        );
+    }
+
+    function Feedback() {
+        return(
+            <Modal show={popup} onHide={() => setPopup(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>React App Says:</Modal.Title>
                 </Modal.Header>
                 <Modal.Body><div className="display-linebreak">{message}</div></Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={handleClose}>Ok</Button>
+                    <Button variant="primary" onClick={() => setPopup(false)}>Ok</Button>
                 </Modal.Footer>
             </Modal>
+        );
+    }
+
+    return(
+        <div className = "card-container">
+            <div className="input-group rounded" style={{width:'80%', padding:'10px 0px'}}>
+                <input type="search" className="form-control rounded" placeholder="Search" aria-label="Search"
+                aria-describedby="search-addon" onChange={event => {setFilter(event.target.value); setPage(1)}}/>
+                <span className="input-group-text border-0" id="search-addon">
+                    <i className="fa fa-search"></i>
+                </span>
+            </div>
+            {Table()}
+            <Pagination page={page} pages={pages} changePage={setPage} />
+            {AddForm()}
+            <Feedback/>
         </div>
     )
 }
