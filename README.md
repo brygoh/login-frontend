@@ -1,20 +1,12 @@
-# Tech-Stack
+# Login with Admin Dashboard
+It is a web application with supports login and admin dashboard.
 
-ReactJS / Javascript / CSS
+# Project Description
+Users can login using their google account and only added users that exist in the server can login. There is separation of duties, only admins are able to view the admin dashboard.
 
-# Overview
+This project is built using **ReactJS** and styled using **CSS**
 
-This depicts a simple webpage interface that allows user to login with their Google Account
-
-# Description
-
-Used Google Client API to authenticate valid Google Account <br />
-Used MongoDB to authenticate users' role by: useState, useEffect, axios.get... etc
-
-- Users have two roles: Admin and Normal (Non-Admin)
-- Webpage supposedly has successful login landing page for both admin and non admin users
-- Webpage supposedly has login failure login landing page for both admin and non admin users
-
+# How to Install and Run the Project
 - clone the project with:
 ```
 git clone https://github.com/brygoh/login-frontend name OR
